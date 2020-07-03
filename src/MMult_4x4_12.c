@@ -39,6 +39,9 @@ void InnerKernel( int m, int n, int k, double *a, int lda,
 {
   int i, j;
   double 
+  
+  // NOTE: 在matrix本来就是m*n时，A's element 本来就已经continuous了，不需要pack
+  // 现在我们首先把A分割成m*n的小块，那么A内不同行的元素的地址是不连续的，需要pack
     packedA[ m * k ];
 
   for ( j=0; j<n; j+=4 ){        /* Loop over the columns of C, unrolled by 4 */

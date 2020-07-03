@@ -60,10 +60,13 @@ void AddDot4x4( int k, double *a, int lda,  double *b, int ldb, double *c, int l
   int p;
 
   v2df_t
+  // 命名方式：c_00_c_10_vreg, 表示该v2df_t.d[0] = C(0,0), v2df_t.d[1] = C(1,0) (double)
     c_00_c_10_vreg,    c_01_c_11_vreg,    c_02_c_12_vreg,    c_03_c_13_vreg,
-    c_20_c_30_vreg,    c_21_c_31_vreg,    c_22_c_32_vreg,    c_23_c_33_vreg,
+    c_20_c_30_vreg,    c_21_c_31_vreg,    c_22_c_32_vreg,    c_23_c_33_vreg, 
+  // 命名方式 a_0p_a1p_vreg, 表示该v2df_t.d[0] = &A(0,p), v2df_t.d[1] = &A(1,p) (double*)
     a_0p_a_1p_vreg,
     a_2p_a_3p_vreg,
+  // 命名方式 b_p0_vreg, 表示该v2df_t.d[0] = &B(0, p), v2df_t.d[1] = &B(0, p)
     b_p0_vreg, b_p1_vreg, b_p2_vreg, b_p3_vreg; 
 
   double 
@@ -94,7 +97,9 @@ void AddDot4x4( int k, double *a, int lda,  double *b, int ldb, double *c, int l
     b_p3_vreg.v = _mm_loaddup_pd( (double *) b_p3_pntr++ );   /* load and duplicate */
 
     /* First row and second rows */
-    c_00_c_10_vreg.v += a_0p_a_1p_vreg.v * b_p0_vreg.v;
+    c_00_c_10_vreg.v += a_0p_a_1p_vreg.v * b_p0_vreg.v; 
+    // -> C(0, 0) += A(0, p) * B(p, 0)
+    // -> C(1, 0) += A(1, p) * B(p, 0) 
     c_01_c_11_vreg.v += a_0p_a_1p_vreg.v * b_p1_vreg.v;
     c_02_c_12_vreg.v += a_0p_a_1p_vreg.v * b_p2_vreg.v;
     c_03_c_13_vreg.v += a_0p_a_1p_vreg.v * b_p3_vreg.v;
